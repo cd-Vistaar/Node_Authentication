@@ -27,7 +27,9 @@ module.exports = () => {
     validation.validatePassword,
     validation.validatePasswordMatch,
     async (req, res, next) => {
+
       try {
+
         // This block deals with processing the validation input
         const validationErrors = validation.validationResult(req);
         const errors = [];
@@ -40,20 +42,15 @@ module.exports = () => {
             });
           });
         } else {
-          const existingEmail = await UserService.findByEmail(req.body.email);
-          const existingUsername = await UserService.findByUsername(
-            req.body.username
-          );
 
-          if (existingEmail || existingUsername) {
-            errors.push('email');
-            errors.push('username');
-            req.session.messages.push({
-              text: 'The given email address or the username exist already!',
-              type: 'danger',
-            });
-          }
+          //This block checks if the User already exists(username/email) and if not creates the user
+          console.log(req.body)
+          /**
+           * @todo: Provide a method in the UserService tries to find a user by email
+           */
+          return next('Not implemented!')
         }
+
 
         // If there was an error, we will render the form again and display the errors
         // We also pass in the previous user input so the user does not have to enter everything again
@@ -69,17 +66,11 @@ module.exports = () => {
         /**
          * @todo: Provide a method in UserService that will create a new user
          */
-        await UserService.createUser(
-          req.body.username,
-          req.body.email,
-          req.body.password
-        );
-        req.session.messages.push({
-          text: 'Your account was created!',
-          type: 'success',
-        });
 
-        return res.redirect('/auth/login');
+        //On success, redirect the user to the index page so that the form
+        //can not be sent again by hitting refresh on the browser
+        return next('Not Implemented!')
+        
       } catch (err) {
         return next(err);
       }
